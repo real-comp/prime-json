@@ -19,11 +19,11 @@ import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
  *
  * @author krenfro
  */
-public class JsonRecordWriter extends BaseFileWriter{
+public class JsonRecordReader extends BaseFileWriter{
 
     ObjectMapper jackson;
     
-    public JsonRecordWriter(){
+    public JsonRecordReader(){
         super();
         jackson = new ObjectMapper();
         AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();

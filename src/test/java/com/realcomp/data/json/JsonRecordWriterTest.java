@@ -1,5 +1,9 @@
 package com.realcomp.data.json;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.io.FileOutputStream;
 import java.io.File;
 import com.realcomp.data.schema.SchemaField;
@@ -28,11 +32,18 @@ public class JsonRecordWriterTest {
         
         Record record = new Record();
         record.put("a", "asdf");
-        record.put("b", 1);
-        record.put("c", 1.1f);
-        record.put("d", 2);
-        record.put("e", 2.2d);
-        record.put("f", true);
+        
+        List<String> list = new ArrayList<String>();
+        list.add("1");
+        list.add("2");
+        list.add("3");
+        record.put("b", list);
+        
+        
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("asdf","9834939");
+        map.put("true", Boolean.valueOf(true));
+        record.put("map", map);
         
         return record;
         
@@ -53,8 +64,8 @@ public class JsonRecordWriterTest {
         
         try{
             writer.open(System.out);
-            writer.write("asdf");
-            //writer.write(getRecord());
+            Record record = getRecord();
+            writer.write(record);
         }
         catch(Exception e){
             e.printStackTrace();
