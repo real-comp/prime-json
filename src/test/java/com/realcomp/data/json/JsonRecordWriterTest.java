@@ -1,5 +1,7 @@
 package com.realcomp.data.json;
 
+import java.io.FileOutputStream;
+import java.io.File;
 import com.realcomp.data.schema.SchemaField;
 import com.realcomp.data.schema.FileSchema;
 import com.realcomp.data.conversion.ConversionException;
@@ -25,12 +27,12 @@ public class JsonRecordWriterTest {
     protected Record getRecord(){
         
         Record record = new Record();
-        record.put("String", "asdf");
-        record.put("Integer", 1);
-        record.put("Float", 1.1f);
-        record.put("Long", 2);
-        record.put("Double", 2.2d);
-        record.put("Boolean", true);
+        record.put("a", "asdf");
+        record.put("b", 1);
+        record.put("c", 1.1f);
+        record.put("d", 2);
+        record.put("e", 2.2d);
+        record.put("f", true);
         
         return record;
         
@@ -39,7 +41,7 @@ public class JsonRecordWriterTest {
     public FileSchema getSchema() throws SchemaException{
         
         FileSchema schema = new FileSchema();
-        schema.addField(new SchemaField("String"));
+        schema.addField(new SchemaField("a"));
         return schema;
     }
     
@@ -49,9 +51,17 @@ public class JsonRecordWriterTest {
         JsonRecordWriter writer = new JsonRecordWriter();
         writer.setSchema(getSchema());
         
-        writer.open(System.out);
-        writer.write(getRecord());
-        writer.close();
+        try{
+            writer.open(System.out);
+            writer.write("asdf");
+            //writer.write(getRecord());
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally{
+            writer.close();
+        }
         
     }
 

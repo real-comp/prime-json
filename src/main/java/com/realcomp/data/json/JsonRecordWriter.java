@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.List;
+import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
 /**
  *
@@ -22,6 +24,9 @@ public class JsonRecordWriter extends BaseFileWriter{
     public JsonRecordWriter(){
         super();
         jackson = new ObjectMapper();
+        AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+        jackson.getDeserializationConfig().withAnnotationIntrospector(introspector);
+        jackson.getSerializationConfig().withAnnotationIntrospector(introspector);
     }
 
     @Override
@@ -48,8 +53,12 @@ public class JsonRecordWriter extends BaseFileWriter{
     @Override
     public void close(){
         try {
+            out.flush();
+            out.write("asdfafsdasdf".getBytes(charset));
             out.write("]".getBytes(charset));
-        } catch (IOException ignored) {
+            out.flush();
+        } 
+        catch (IOException ignored) {
         }
         super.close();
     }
