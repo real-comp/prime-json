@@ -1,5 +1,7 @@
 package com.realcomp.data.json;
 
+import com.realcomp.data.Operation;
+import com.realcomp.data.conversion.Alias;
 import com.realcomp.data.conversion.ConversionException;
 import com.realcomp.data.record.Record;
 import com.realcomp.data.record.writer.BaseFileWriter;
@@ -43,9 +45,11 @@ public class JsonRecordWriter extends BaseFileWriter{
             out.write(",".getBytes(charset));
         }
         
+        for (SchemaField field: fields)
+            write(record, field);
+        
         jackson.writeValue(out, record);
     }
-
         
     
     @Override
