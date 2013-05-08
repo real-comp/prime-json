@@ -216,6 +216,8 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
             throw new IllegalArgumentException("Invalid IOContext. No InputStream specified");
 
         jsonParser = jsonFactory.createJsonParser(context.getIn());
+        transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
+        transformContext.setSchema(context.getSchema());
     }
 
     @Override
