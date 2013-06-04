@@ -87,6 +87,6 @@
     <scm>
         <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/trunk</connection>
         <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/trunk</developerConnection>
-        <url>http://dev.real-comp.com:8060/browse/rcsvn/realcomp-data-json/trunk</url>
+        <url>http://fisheye.real-comp.com/browse/svn/realcomp-data-json/trunk</url>
     </scm>
 </project>
