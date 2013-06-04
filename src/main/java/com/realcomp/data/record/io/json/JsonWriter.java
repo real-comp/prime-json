@@ -33,29 +33,29 @@ import org.codehaus.jackson.util.DefaultPrettyPrinter;
 public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
 
     private static final Logger logger = Logger.getLogger(JsonWriter.class.getName());
-    
+
     protected JsonFactory jsonFactory;
     protected JsonGenerator json;
     protected Transformer transformer;
     protected TransformContext xCtx;
-    protected ValueSurgeon surgeon;    
-    
+    protected ValueSurgeon surgeon;
+
     public JsonWriter(){
-    
+
         super();
         format.putDefault("pretty", "false");
         format.putDefault("type", "JSON");
-        
+
         jsonFactory = new JsonFactory();
         jsonFactory.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
         transformer = new Transformer();
         xCtx = new TransformContext();
         surgeon = new ValueSurgeon();
     }
-    
+
     @Override
     public void write(Record record) throws IOException, ValidationException, ConversionException, SchemaException {
-        
+
         if (record == null)
             throw new IllegalArgumentException("record is null");
 
@@ -64,74 +64,68 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
             beforeFirstOperationsRun = true;
         }
 
-        if (!isPretty() && count > 0){
-            //add newline to output
-            json.writeRaw("\n");
-        }
-        
         if (context.getSchema() != null){
             //modify the record, performing all operations and keeping only the fields defined in the schema
             FieldList fields = context.getSchema().classify(record);
             transform(record, fields);
             filterFields(record, fields);
         }
-        
+
         writeJson(record.asSimpleMap());
-        
+        json.writeRaw("\n");
         count++;
-        
     }
-    
-    protected void transform(Record record, FieldList fields) 
+
+    protected void transform(Record record, FieldList fields)
             throws ConversionException, ValidationException, SchemaException{
-        
+
         assert(record != null);
         assert(context.getSchema() != null);
-        
+
         transformer.setBefore(context.getSchema().getBeforeOperations());
         transformer.setAfter(context.getSchema().getAfterOperations());
         transformer.setFields(fields);
         xCtx.setRecord(record);
         transformer.transform(xCtx);
     }
-    
+
     protected void filterFields(Record record, FieldList fields){
-        
+
         Set<String> filter = new HashSet<String>();
         Set<String> keep = new HashSet<String>();
         for (Field field: fields)
             keep.add(field.getName());
-        
+
         filter.addAll(record.keySet());
         filter.removeAll(keep);
-        
+
         for (String f: filter){
             record.remove(f);
         }
     }
 
-    
+
     private void writeJson(Map<String,Object> map)
             throws ValidationException, ConversionException, IOException{
 
         json.writeStartObject();
-        
+
         for (Map.Entry<String,Object> entry: map.entrySet()){
             writeJson(entry.getKey(), entry.getValue());
         }
-        
+
         json.writeEndObject();
     }
-    
+
     /**
-     * 
+     *
      * @param map
      * @return true if the map is not null and contains a list or a map.
      */
     private boolean isDeepMap(Map<String,Object> map){
-        
+
         boolean deep = true;
-        if (map != null) {           
+        if (map != null) {
             for (Object entry : (List) map) {
                 if (entry != null) {
                     DataType entryType = DataType.getDataType(entry);
@@ -144,18 +138,18 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         }
         return deep;
     }
-    
-    private void writeJson(String name, Object value) 
+
+    private void writeJson(String name, Object value)
             throws IOException, ValidationException, ConversionException{
-        
-        
+
+
         if (value == null){
             json.writeFieldName(name);
             json.writeNull();
         }
         else{
-            
-            DataType type = DataType.getDataType(value);            
+
+            DataType type = DataType.getDataType(value);
             switch(type){
                 case MAP:
                     json.writeFieldName(name);
@@ -173,13 +167,13 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         }
     }
 
-    
-    private void writeJson(Object value, DataType type) 
+
+    private void writeJson(Object value, DataType type)
             throws IOException, ValidationException, ConversionException{
-        
+
         assert(value != null);
         assert(type != null);
-        
+
         switch(type){
             case STRING:
                 json.writeString((String) value);
@@ -209,11 +203,11 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         }
 
     }
-    
-    
+
+
     @Override
     public void close(boolean closeIOContext) {
-        
+
         try {
             executeAfterLastOperations();
         }
@@ -223,7 +217,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         catch (ConversionException ex) {
             logger.log(Level.WARNING, null, ex);
         }
-        
+
         if (json != null){
             try {
                 json.close();
@@ -232,27 +226,27 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
                 logger.log(Level.WARNING, null, ex);
             }
         }
-        
+
         super.close(closeIOContext);
     }
 
     @Override
     public void open(IOContext context) throws IOException, SchemaException {
-        
+
         super.open(context);
         if (context.getOut() == null)
             throw new IllegalArgumentException("Invalid IOContext. No OutputStream specified");
-        
+
         json = jsonFactory.createJsonGenerator(context.getOut(), JsonEncoding.UTF8);
         if (isPretty()){
             json.setPrettyPrinter(new DefaultPrettyPrinter());
         }
     }
 
-    
+
     @Override
     protected void executeAfterLastOperations() throws ValidationException, ConversionException{
-        
+
         if (context != null && context.getSchema() != null){
             List<Operation> operations = context.getSchema().getAfterLastOperations();
             if (operations != null && !operations.isEmpty()){
@@ -261,14 +255,14 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
             }
         }
 
-            
+
     }
 
     @Override
     protected void executeBeforeFirstOperations() throws ValidationException, ConversionException{
 
          if (context != null &&context.getSchema() != null){
-            List<Operation> operations = context.getSchema().getBeforeFirstOperations();            
+            List<Operation> operations = context.getSchema().getBeforeFirstOperations();
             if (operations != null && !operations.isEmpty()){
                 xCtx.setRecordCount(this.getCount());
                 surgeon.operate(operations, xCtx);
@@ -276,10 +270,10 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         }
     }
 
-    
+
     public boolean isPretty(){
         return Boolean.parseBoolean(format.get("pretty"));
     }
-    
-    
+
+
 }

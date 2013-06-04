@@ -23,15 +23,15 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 /**
- * 
+ *
  * The JSON format is rich enough that a Schema is <i>not</i> required to parse a Record.
  * If a schema <i>is</i> specified, only the fields specified in the schema will appear in the Record.
- * 
- * 
+ *
+ *
  * @author krenfro
  */
 public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
-    
+
     protected JsonFactory jsonFactory;
     protected JsonParser jsonParser;
     protected ValueSurgeon surgeon;
@@ -64,16 +64,16 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
             }
             else{
                 /* Since a schema is defined, only put the fields defined in the schema into the final record.
-                 * The operations should be able to find values in the more complete Record parsed from 
+                 * The operations should be able to find values in the more complete Record parsed from
                  * the raw json.  Create a temporary Record from the parsed json, and use that for the
-                 * field creation.  
+                 * field creation.
                  */
                 record = new Record();
                 Record temp = new Record(map);
                 transformContext.setRecord(temp);
                 for (Field field : context.getSchema().classify(temp)) {
                     transformContext.setKey(field.getName());
-                    Object value = surgeon.operate(getOperations(field), transformContext);                    
+                    Object value = surgeon.operate(getOperations(field), transformContext);
                     if (value != null){
                         //Write the results of the operations to both the final Record, and the
                         // temporary Record for subsequent field creation.
@@ -214,8 +214,10 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
         super.open(context);
         if (context.getIn() == null)
             throw new IllegalArgumentException("Invalid IOContext. No InputStream specified");
-        
+
         jsonParser = jsonFactory.createJsonParser(context.getIn());
+        transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
+        transformContext.setSchema(context.getSchema());
     }
 
     @Override

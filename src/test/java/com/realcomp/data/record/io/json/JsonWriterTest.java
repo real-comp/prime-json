@@ -20,19 +20,19 @@ import org.junit.Test;
  * @author krenfro
  */
 public class JsonWriterTest {
-    
-    
+
+
     static{
         RecordWriterFactory.registerWriter("JSON", JsonWriter.class.getName());
     }
-    
-    
+
+
     public JsonWriterTest() {
     }
 
 
     private Record getSampleRecord(){
-        
+
         Record record = new Record();
         record.put("zip", "78717");
         record.put("address", "8665 EPHRAIM RD");
@@ -43,7 +43,7 @@ public class JsonWriterTest {
         record.put("usedDate", "2011-09-21");
         return record;
     }
-    
+
     private Record getComplexRecord(){
         Record record = new Record();
         record.put("s", "test string");
@@ -52,7 +52,7 @@ public class JsonWriterTest {
         record.put("d", 1.3434d);
         record.put("l", 7474l);
         record.put("b", true);
-        
+
         ArrayList list = new ArrayList();
         list.add("a");
         list.add("b");
@@ -61,60 +61,64 @@ public class JsonWriterTest {
         list.add(2);
         list.add(3);
         record.put("list", list);
-        
+
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("entry", "a");
         map.put("entryNumber", 1);
         record.put("map", map);
-        
+
         return record;
     }
-        
+
     @Test
     public void testWrite() throws Exception{
-        
+
         IOContext ctx = new IOContextBuilder()
                 .out(new ByteArrayOutputStream())
                 .build();
-        
+
         //write the Record to json string.
         JsonWriter writer = new JsonWriter();
         writer.open(ctx);
         writer.write(getSampleRecord());
-        writer.close();  
-        
-        String json = new String(((ByteArrayOutputStream) ctx.getOut()).toByteArray());
-        
+        writer.close();
+
+
+        byte[] ba = ((ByteArrayOutputStream) ctx.getOut()).toByteArray();
+
+        assertTrue(ba[ba.length - 1] == (byte) 10); //should end with LF
+        String json = new String(ba);
+
         //read the json string back into a Record
         JsonReader reader = new JsonReader();
         ctx = new IOContextBuilder(ctx)
                 .in(new ByteArrayInputStream(json.getBytes()))
                 .build();
-        
+
         reader.open(ctx);
         Record record = reader.read();
         reader.close();
-        
+
         //make sure the read record matches the original Record
         assertEquals(record, getSampleRecord());
     }
-    
-    
-    
+
+
+
     @Test
     public void testWriteTypes() throws Exception{
-        
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         IOContext ctx = new IOContextBuilder()
                 .out(out)
                 .build();
-        
+
         JsonWriter writer = new JsonWriter();
         writer.open(ctx);
         writer.write(getComplexRecord());
-        writer.close();        
+        writer.close();
         String json = new String(out.toByteArray());
-        
+
         //should be close to:
         //{"f":1.2,"d":1.3434,"b":true,"s":"test string","list":["a","b","c",1,2,3],"l":7474,"i":1, "map":{"entryNumber":1,"entry":"a"}}
 //        {"l":7474,"f":1.2,"d":1.3434,"list":["a","b","c",1,2,3],"map.entry":"a","s":"test string","i":1,"b":true,"map.entryNumber":1}
@@ -128,29 +132,29 @@ public class JsonWriterTest {
         assertTrue(Pattern.compile("\"i\"[ ]*:[ ]*[0-9\\.]+").matcher(json).find());
         assertTrue(Pattern.compile("\"s\"[ ]*:[ ]*\"test string\"").matcher(json).find());
         System.out.println(json);
-        
+
         assertTrue(Pattern.compile("\"list\"[ ]*:[ ]*\\[[0-9a-zA-Z,\"\\. ]+\\]").matcher(json).find());
         assertTrue(Pattern.compile("\"map\"[ ]*:[ ]*\\{[0-9a-zA-Z,\"\\.: ]+\\}").matcher(json).find());
-        
+
     }
-    
-    
-    
+
+
+
     @Test
     public void testPrettyPrint() throws Exception{
-        
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         IOContext ctx = new IOContextBuilder()
                 .attribute("pretty", "true")
                 .out(out)
                 .build();
-        
+
         JsonWriter writer = new JsonWriter();
         writer.open(ctx);
         writer.write(getComplexRecord());
-        writer.close();        
+        writer.close();
         String json = new String(out.toByteArray());
-        
+
         assertTrue(Pattern.compile("\"f\"[ ]*:[ ]*[0-9\\.]+").matcher(json).find());
         assertTrue(Pattern.compile("\"d\"[ ]*:[ ]*[0-9\\.]+").matcher(json).find());
         assertTrue(Pattern.compile("\"b\"[ ]*:[ ]*true").matcher(json).find());
@@ -158,51 +162,51 @@ public class JsonWriterTest {
         assertTrue(Pattern.compile("\"i\"[ ]*:[ ]*[0-9\\.]+").matcher(json).find());
         assertTrue(Pattern.compile("\"s\"[ ]*:[ ]*\"test string\"").matcher(json).find());
         assertTrue(Pattern.compile("\"list\"[ ]*:[ ]*\\[[0-9a-zA-Z,\"\\. ]+\\]").matcher(json).find());
-        
+
         //not matching very much of the map here...
         assertTrue(Pattern.compile("\"map\"[ ]*:[ ]*\\{").matcher(json).find());
     }
-    
-    
-        
+
+
+
     @Test
     public void testWriteWithSchema() throws Exception{
-        
+
         Schema schema = SchemaFactory.buildSchema(this.getClass().getResourceAsStream("sample.schema"));
         IOContext ctx = new IOContextBuilder()
                 .schema(schema)
                 .in(this.getClass().getResourceAsStream("sample.json"))
                 .build();
-        
+
         JsonReader reader = new JsonReader();
         reader.open(ctx);
-        
+
         Record record = reader.read();
-        
+
         //add field that is not in schema
         record.put("skip", "not in schema");
-        
+
         //change a field so the upper-case operation is run.
         record.put("source", "relevate");//lower-case
-        
+
         //write the Record to json string.
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ctx = new IOContextBuilder(ctx).out(out).build();
         JsonWriter writer = new JsonWriter();
         writer.open(ctx);
         writer.write(record);
-        writer.close();        
+        writer.close();
         String json = new String(out.toByteArray());
-        
+
         System.out.println(json);
-        
+
         //note upper case operation ran
         assertTrue(Pattern.compile("\"source\"[ ]*:[ ]*\"RELEVATE\"").matcher(json).find());
-        
+
         //the skip field should have been removed
         assertFalse(Pattern.compile("\"skip\"").matcher(json).find());
-        
+
     }
-    
-    
+
+
 }
