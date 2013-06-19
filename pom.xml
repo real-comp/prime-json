@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.realcomp.data</groupId>
     <artifactId>realcomp-data-json</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.2</version>
     <packaging>jar</packaging>
     <name>realcomp-data-json</name>
     <properties>
@@ -77,8 +75,8 @@
         </snapshotRepository>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/trunk</developerConnection>
-        <url>http://fisheye.real-comp.com/browse/svn/realcomp-data-json/trunk</url>
+        <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/tags/realcomp-data-json-0.0.2</connection>
+        <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/tags/realcomp-data-json-0.0.2</developerConnection>
+        <url>http://fisheye.real-comp.com/browse/svn/realcomp-data-json/tags/realcomp-data-json-0.0.2</url>
     </scm>
 </project>
