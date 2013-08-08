@@ -27,7 +27,8 @@ import org.codehaus.jackson.JsonToken;
  * The JSON format is rich enough that a Schema is <i>not</i> required to parse a Record.
  * If a schema <i>is</i> specified, only the fields specified in the schema will appear in the Record.
  *
- *
+ * Will read a single JSON object or an array of JSON objects.
+ * 
  * @author krenfro
  */
 public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
@@ -97,7 +98,7 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
         assert(context.getSchema() != null);
 
         Schema schema = context.getSchema();
-        List<Operation> operations = new ArrayList<Operation>();
+        List<Operation> operations = new ArrayList<>();
         if (schema.getBeforeOperations() != null)
             operations.addAll(schema.getBeforeOperations());
         operations.addAll(field.getOperations());

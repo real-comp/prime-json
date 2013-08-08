@@ -56,7 +56,7 @@ public class JsonReaderTest {
         record.put("product", "ALLSTATE AUTO SPECIFIC");
         record.put("source", "relevate");
         record.put("usedDate", "2011-09-21");
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("1");
         list.add("2");
         record.put("list", list);
@@ -137,6 +137,28 @@ public class JsonReaderTest {
 
         assertNull(reader.read());
         reader.close();
+    }
+
+
+
+    @Test
+    public void testReadMultipleFromFile() throws Exception{
+
+        IOContext ctx = new IOContextBuilder()
+                .in(this.getClass().getResourceAsStream("sample2.json")).build();
+        JsonReader reader = new JsonReader();
+        reader.open(ctx);
+
+        Record record = reader.read();
+        assertNotNull(record);
+        assertEquals(1, reader.getCount());
+        assertEquals("relevate", record.get("source"));
+
+        assertNotNull(reader.read());
+        assertEquals(2, reader.getCount());
+        assertNull(reader.read());
+        reader.close();
+
     }
 
 

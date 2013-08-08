@@ -62,13 +62,66 @@ public class JsonWriterTest {
         list.add(3);
         record.put("list", list);
 
-        Map<String,Object> map = new HashMap<String,Object>();
+        Map<String,Object> map = new HashMap<>();
         map.put("entry", "a");
         map.put("entryNumber", 1);
         record.put("map", map);
 
         return record;
     }
+
+
+
+    @Test
+    public void testNoRecords() throws Exception{
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        IOContext ctx = new IOContextBuilder().out(out).build();
+
+        //write the Record to json string.
+        JsonWriter writer = new JsonWriter();
+        writer.open(ctx);
+        writer.close();
+
+        assertEquals("[]", new String(out.toByteArray()));
+    }
+
+
+    @Test
+    public void testOneRecord() throws Exception{
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        IOContext ctx = new IOContextBuilder().out(out).build();
+
+        //write the Record to json string.
+        JsonWriter writer = new JsonWriter();
+        writer.open(ctx);
+        Record record = new Record();
+        record.put("a", 1);
+        writer.write(record);
+        writer.close();
+
+        assertEquals("[{\"a\":1}]", new String(out.toByteArray()));
+    }
+
+    @Test
+    public void testTwoRecords() throws Exception{
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        IOContext ctx = new IOContextBuilder().out(out).build();
+
+        //write the Record to json string.
+        JsonWriter writer = new JsonWriter();
+        writer.open(ctx);
+        Record record = new Record();
+        record.put("a", 1);
+        writer.write(record);
+        writer.write(record);
+        writer.close();
+
+        assertEquals("[{\"a\":1}\n,{\"a\":1}]", new String(out.toByteArray()));
+    }
+
 
     @Test
     public void testWrite() throws Exception{
@@ -86,7 +139,6 @@ public class JsonWriterTest {
 
         byte[] ba = ((ByteArrayOutputStream) ctx.getOut()).toByteArray();
 
-        assertTrue(ba[ba.length - 1] == (byte) 10); //should end with LF
         String json = new String(ba);
 
         //read the json string back into a Record

@@ -71,8 +71,11 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
             filterFields(record, fields);
         }
 
+        if (count > 0){
+            json.writeRaw('\n');
+        }
         writeJson(record.asSimpleMap());
-        json.writeRaw("\n");
+
         count++;
     }
 
@@ -91,8 +94,8 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
 
     protected void filterFields(Record record, FieldList fields){
 
-        Set<String> filter = new HashSet<String>();
-        Set<String> keep = new HashSet<String>();
+        Set<String> filter = new HashSet<>();
+        Set<String> keep = new HashSet<>();
         for (Field field: fields)
             keep.add(field.getName());
 
@@ -220,6 +223,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
 
         if (json != null){
             try {
+                json.writeEndArray();
                 json.close();
             }
             catch (IOException ex) {
@@ -241,6 +245,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         if (isPretty()){
             json.setPrettyPrinter(new DefaultPrettyPrinter());
         }
+        json.writeStartArray();
     }
 
 
