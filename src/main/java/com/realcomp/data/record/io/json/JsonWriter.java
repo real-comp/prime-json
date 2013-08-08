@@ -214,10 +214,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         try {
             executeAfterLastOperations();
         }
-        catch (ValidationException ex) {
-            logger.log(Level.WARNING, null, ex);
-        }
-        catch (ConversionException ex) {
+        catch (ValidationException | ConversionException ex) {
             logger.log(Level.WARNING, null, ex);
         }
 
