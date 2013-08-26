@@ -28,7 +28,7 @@ import org.codehaus.jackson.JsonToken;
  * If a schema <i>is</i> specified, only the fields specified in the schema will appear in the Record.
  *
  * Will read a single JSON object or an array of JSON objects.
- * 
+ *
  * @author krenfro
  */
 public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
@@ -42,6 +42,7 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
         super();
         format.putDefault("type", "JSON");
         format.putDefault("pretty", "false");
+        format.putDefault("singleObject", "true");
         jsonFactory = new JsonFactory();
         surgeon = new ValueSurgeon();
         transformContext = new TransformContext();

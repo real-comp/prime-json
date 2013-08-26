@@ -120,7 +120,30 @@ public class JsonWriterTest {
         writer.close();
 
         assertEquals("[{\"a\":1}\n,{\"a\":1}]", new String(out.toByteArray()));
+
     }
+
+
+
+    @Test
+    public void testTwoRecordsMultipleObjects() throws Exception{
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        IOContext ctx = new IOContextBuilder().out(out).attribute("singleObject", "false").build();
+
+        //write the Record to json string.
+        JsonWriter writer = new JsonWriter();
+
+        writer.open(ctx);
+        Record record = new Record();
+        record.put("a", 1);
+        writer.write(record);
+        writer.write(record);
+
+        writer.close();
+        assertEquals("{\"a\":1}\n {\"a\":1}", new String(out.toByteArray()));
+    }
+
 
 
     @Test
@@ -259,6 +282,8 @@ public class JsonWriterTest {
         assertFalse(Pattern.compile("\"skip\"").matcher(json).find());
 
     }
+
+
 
 
 }

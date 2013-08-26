@@ -45,6 +45,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         super();
         format.putDefault("pretty", "false");
         format.putDefault("type", "JSON");
+        format.putDefault("singleObject", "true");
 
         jsonFactory = new JsonFactory();
         jsonFactory.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
@@ -200,8 +201,9 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
                 writeJson((Map<String,Object>) value);
                 break;
             case LIST:
-                for (Object entry: (List) value)
+                for (Object entry: (List) value){
                     writeJson(entry, DataType.getDataType(entry));
+                }
                 break;
         }
 
@@ -220,7 +222,10 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
 
         if (json != null){
             try {
-                json.writeEndArray();
+                if (isSingleObject()){
+                    json.writeEndArray();
+                }
+
                 json.close();
             }
             catch (IOException ex) {
@@ -242,7 +247,10 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         if (isPretty()){
             json.setPrettyPrinter(new DefaultPrettyPrinter());
         }
-        json.writeStartArray();
+
+        if (isSingleObject()){
+            json.writeStartArray();
+        }
     }
 
 
@@ -277,5 +285,8 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         return Boolean.parseBoolean(format.get("pretty"));
     }
 
+    public boolean isSingleObject(){
+        return Boolean.parseBoolean(format.get("singleObject"));
+    }
 
 }
