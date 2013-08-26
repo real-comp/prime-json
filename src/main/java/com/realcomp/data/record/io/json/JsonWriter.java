@@ -25,6 +25,7 @@ import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.util.DefaultPrettyPrinter;
+import org.codehaus.jackson.util.MinimalPrettyPrinter;
 
 /**
  *
@@ -49,6 +50,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
 
         jsonFactory = new JsonFactory();
         jsonFactory.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+
         transformer = new Transformer();
         xCtx = new TransformContext();
         surgeon = new ValueSurgeon();
@@ -73,7 +75,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         }
 
         if (count > 0){
-            json.writeRaw('\n');
+            json.writeRaw("\n");
         }
         writeJson(record.asSimpleMap());
 
@@ -247,6 +249,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         if (isPretty()){
             json.setPrettyPrinter(new DefaultPrettyPrinter());
         }
+
 
         if (isSingleObject()){
             json.writeStartArray();
