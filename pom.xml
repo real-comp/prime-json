@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.realcomp.data</groupId>
             <artifactId>realcomp-data</artifactId>
-            <version>0.3.3</version>
+            <version>0.3.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>

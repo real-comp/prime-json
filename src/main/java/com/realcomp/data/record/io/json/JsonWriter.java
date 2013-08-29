@@ -67,9 +67,9 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
             beforeFirstOperationsRun = true;
         }
 
-        if (context.getSchema() != null){
+        if (schema != null){
             //modify the record, performing all operations and keeping only the fields defined in the schema
-            FieldList fields = context.getSchema().classify(record);
+            FieldList fields = schema.classify(record);
             transform(record, fields);
             filterFields(record, fields);
         }
@@ -86,10 +86,10 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
             throws ConversionException, ValidationException, SchemaException{
 
         assert(record != null);
-        assert(context.getSchema() != null);
+        assert(schema != null);
 
-        transformer.setBefore(context.getSchema().getBeforeOperations());
-        transformer.setAfter(context.getSchema().getAfterOperations());
+        transformer.setBefore(schema.getBeforeOperations());
+        transformer.setAfter(schema.getAfterOperations());
         transformer.setFields(fields);
         xCtx.setRecord(record);
         transformer.transform(xCtx);
@@ -260,8 +260,8 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
     @Override
     protected void executeAfterLastOperations() throws ValidationException, ConversionException{
 
-        if (context != null && context.getSchema() != null){
-            List<Operation> operations = context.getSchema().getAfterLastOperations();
+        if (context != null && schema != null){
+            List<Operation> operations = schema.getAfterLastOperations();
             if (operations != null && !operations.isEmpty()){
                 xCtx.setRecordCount(this.getCount());
                 surgeon.operate(operations, xCtx);
@@ -274,8 +274,8 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
     @Override
     protected void executeBeforeFirstOperations() throws ValidationException, ConversionException{
 
-         if (context != null &&context.getSchema() != null){
-            List<Operation> operations = context.getSchema().getBeforeFirstOperations();
+         if (context != null && schema != null){
+            List<Operation> operations = schema.getBeforeFirstOperations();
             if (operations != null && !operations.isEmpty()){
                 xCtx.setRecordCount(this.getCount());
                 surgeon.operate(operations, xCtx);

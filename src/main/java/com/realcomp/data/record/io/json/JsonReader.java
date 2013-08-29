@@ -7,7 +7,6 @@ import com.realcomp.data.record.io.BaseRecordReaderWriter;
 import com.realcomp.data.record.io.IOContext;
 import com.realcomp.data.record.io.RecordReader;
 import com.realcomp.data.schema.Field;
-import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.ValueSurgeon;
@@ -61,7 +60,7 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
         Map map = parseMap();
 
         if (map != null) {
-            if (context.getSchema() == null){
+            if (schema == null){
                 record = new Record(map);
             }
             else{
@@ -73,7 +72,7 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
                 record = new Record();
                 Record temp = new Record(map);
                 transformContext.setRecord(temp);
-                for (Field field : context.getSchema().classify(temp)) {
+                for (Field field : schema.classify(temp)) {
                     transformContext.setKey(field.getName());
                     Object value = surgeon.operate(getOperations(field), transformContext);
                     if (value != null){
@@ -96,9 +95,8 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
     private List<Operation> getOperations(Field field) {
 
         assert(field != null);
-        assert(context.getSchema() != null);
+        assert(schema != null);
 
-        Schema schema = context.getSchema();
         List<Operation> operations = new ArrayList<>();
         if (schema.getBeforeOperations() != null)
             operations.addAll(schema.getBeforeOperations());
@@ -219,7 +217,7 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
 
         jsonParser = jsonFactory.createJsonParser(context.getIn());
         transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
-        transformContext.setSchema(context.getSchema());
+        transformContext.setSchema(schema);
     }
 
     @Override
