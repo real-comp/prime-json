@@ -25,7 +25,6 @@ import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.util.DefaultPrettyPrinter;
-import org.codehaus.jackson.util.MinimalPrettyPrinter;
 
 /**
  *
@@ -123,27 +122,6 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
         json.writeEndObject();
     }
 
-    /**
-     *
-     * @param map
-     * @return true if the map is not null and contains a list or a map.
-     */
-    private boolean isDeepMap(Map<String,Object> map){
-
-        boolean deep = true;
-        if (map != null) {
-            for (Object entry : (List) map) {
-                if (entry != null) {
-                    DataType entryType = DataType.getDataType(entry);
-                    if (entryType == DataType.LIST || entryType == DataType.MAP) {
-                        deep = false;
-                        break;
-                    }
-                }
-            }
-        }
-        return deep;
-    }
 
     private void writeJson(String name, Object value)
             throws IOException, ValidationException, ConversionException{
