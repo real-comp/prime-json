@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 /**
@@ -146,12 +147,20 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
                     map.put(jsonParser.getCurrentName(), jsonParser.getText());
                 }
                 else if (token == JsonToken.VALUE_NUMBER_FLOAT) {
-                    //TODO: charset being used!
-                    map.put(jsonParser.getCurrentName(), Float.valueOf(jsonParser.getFloatValue()));
+                    try{
+                        map.put(jsonParser.getCurrentName(), Float.valueOf(jsonParser.getFloatValue()));
+                    }
+                    catch(JsonParseException ex){
+                        map.put(jsonParser.getCurrentName(), Double.valueOf(jsonParser.getDoubleValue()));
+                    }
                 }
                 else if (token == JsonToken.VALUE_NUMBER_INT) {
-                    //TODO: charset being used!
-                    map.put(jsonParser.getCurrentName(), Integer.valueOf(jsonParser.getIntValue()));
+                    try{
+                        map.put(jsonParser.getCurrentName(), Integer.valueOf(jsonParser.getIntValue()));
+                    }
+                    catch(JsonParseException ex){
+                        map.put(jsonParser.getCurrentName(), Long.valueOf(jsonParser.getLongValue()));
+                    }
                 }
                 else if (token == JsonToken.VALUE_NULL) {
                     //skip
