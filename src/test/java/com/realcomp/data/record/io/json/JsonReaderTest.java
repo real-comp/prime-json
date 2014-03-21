@@ -161,8 +161,7 @@ public class JsonReaderTest {
 
     }
 
-
-
+   
     @Test
     public void testWithSchema() throws Exception{
 
