@@ -153,7 +153,7 @@ public class JsonWriterTest {
         writer.write(record);
         writer.close();
 
-        assertEquals("{\"a\":1}\n {\"a\":1}", new String(out.toByteArray()));
+        assertEquals("{\"a\":1}\n{\"a\":1}", new String(out.toByteArray()));
 
     }
 
