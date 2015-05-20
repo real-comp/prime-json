@@ -83,8 +83,24 @@ public class JsonWriterTest {
         writer.open(ctx);
         writer.close();
 
+        assertEquals("", new String(out.toByteArray()));
+    }
+
+    @Test
+    public void testNoRecordsSingleObject() throws Exception{
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        IOContext ctx = new IOContextBuilder().out(out).attribute("singleObject", "true").build();
+
+        //write the Record to json string.
+        JsonWriter writer = new JsonWriter();
+        writer.open(ctx);
+        writer.close();
+
         assertEquals("[]", new String(out.toByteArray()));
     }
+
+
 
 
     @Test
@@ -92,6 +108,24 @@ public class JsonWriterTest {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         IOContext ctx = new IOContextBuilder().out(out).build();
+
+        //write the Record to json string.
+        JsonWriter writer = new JsonWriter();
+        writer.open(ctx);
+        Record record = new Record();
+        record.put("a", 1);
+        writer.write(record);
+        writer.close();
+
+        assertEquals("{\"a\":1}", new String(out.toByteArray()));
+    }
+    
+    
+    @Test
+    public void testOneRecordSingleObject() throws Exception{
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        IOContext ctx = new IOContextBuilder().out(out).attribute("singleObject", "true").build();
 
         //write the Record to json string.
         JsonWriter writer = new JsonWriter();
@@ -119,17 +153,17 @@ public class JsonWriterTest {
         writer.write(record);
         writer.close();
 
-        assertEquals("[{\"a\":1}\n,{\"a\":1}]", new String(out.toByteArray()));
+        assertEquals("{\"a\":1}\n {\"a\":1}", new String(out.toByteArray()));
 
     }
 
 
 
     @Test
-    public void testTwoRecordsMultipleObjects() throws Exception{
+    public void testTwoRecordsSingleObject() throws Exception{
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        IOContext ctx = new IOContextBuilder().out(out).attribute("singleObject", "false").build();
+        IOContext ctx = new IOContextBuilder().out(out).attribute("singleObject", "true").build();
 
         //write the Record to json string.
         JsonWriter writer = new JsonWriter();
@@ -141,7 +175,7 @@ public class JsonWriterTest {
         writer.write(record);
 
         writer.close();
-        assertEquals("{\"a\":1}\n {\"a\":1}", new String(out.toByteArray()));
+        assertEquals("[{\"a\":1}\n,{\"a\":1}]", new String(out.toByteArray()));
     }
 
 
