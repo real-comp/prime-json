@@ -1,0 +1,19 @@
+<schema name="test" version="1.0">
+    
+  <format type="JSON"/>
+  
+  <before>
+    <upperCase/>
+  </before>
+  <after>
+    <trim/>
+  </after>
+  <fields>
+    <field name="zip"/>
+    <field name="address"/>
+    <field name="source"/>
+    <field name="doesnotexistinjson">
+        <concat fields="zip"/>
+    </field>
+  </fields>
+</schema>
