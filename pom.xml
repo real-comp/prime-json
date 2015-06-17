@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.realcomp.data</groupId>
     <artifactId>realcomp-data-json</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
     <name>realcomp-data-json</name>
     <properties>
@@ -75,8 +75,8 @@
         </snapshotRepository>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/trunk</developerConnection>
-        <url>http://fisheye.real-comp.com/browse/svn/realcomp-data-json/trunk</url>
+        <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/tags/realcomp-data-json-0.1.2</connection>
+        <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/tags/realcomp-data-json-0.1.2</developerConnection>
+        <url>http://fisheye.real-comp.com/browse/svn/realcomp-data-json/tags/realcomp-data-json-0.1.2</url>
     </scm>
 </project>
