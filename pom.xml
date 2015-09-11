@@ -75,8 +75,9 @@
         </snapshotRepository>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://dev.real-comp.com/opt/usr/share/rcsvn/realcomp-data-json/trunk</developerConnection>
-        <url>http://fisheye.real-comp.com/browse/svn/realcomp-data-json/trunk</url>
+        <connection>scm:git:ssh://git@bitbucket.org/real-comp/realcomp-data-json.git</connection>
+        <developerConnection>scm:git:ssh://git@bitbucket.org/real-comp/realcomp-data-json.git</developerConnection>
+        <url>https://bitbucket.org/real-comp/realcomp-data-json</url>
     </scm>
 </project>
+
