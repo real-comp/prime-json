@@ -11,6 +11,11 @@ import com.realcomp.data.schema.SchemaException;
 import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.ValueSurgeon;
 import com.realcomp.data.validation.ValidationException;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,15 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
+
 /**
- *
  * The JSON format is rich enough that a Schema is <i>not</i> required to parse a Record.
  * If a schema <i>is</i> specified, only the fields specified in the schema will appear in the Record.
- *
+ * <p/>
  * Will read a single JSON object or an array of JSON objects.
  *
  * @author krenfro
@@ -42,7 +43,7 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
         super();
         format.putDefault("type", "JSON");
         format.putDefault("pretty", "false");
-        format.putDefault("singleObject", "true");
+        format.putDefault("singleObject", "false");
         jsonFactory = new JsonFactory();
         surgeon = new ValueSurgeon();
         transformContext = new TransformContext();
@@ -61,10 +62,9 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
         Map map = parseMap();
 
         if (map != null) {
-            if (schema == null){
+            if (schema == null) {
                 record = new Record(map);
-            }
-            else{
+            } else {
                 /* Since a schema is defined, only put the fields defined in the schema into the final record.
                  * The operations should be able to find values in the more complete Record parsed from
                  * the raw json.  Create a temporary Record from the parsed json, and use that for the
@@ -76,7 +76,7 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
                 for (Field field : schema.classify(temp)) {
                     transformContext.setKey(field.getName());
                     Object value = surgeon.operate(getOperations(field), transformContext);
-                    if (value != null){
+                    if (value != null) {
                         //Write the results of the operations to both the final Record, and the
                         // temporary Record for subsequent field creation.
                         record.put(field.getName(), field.getType().coerce(value));
@@ -85,8 +85,7 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
                 }
             }
             count++;
-        }
-        else {
+        } else {
             executeAfterLastOperations();
         }
 
@@ -95,15 +94,17 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
 
     private List<Operation> getOperations(Field field) {
 
-        assert(field != null);
-        assert(schema != null);
+        assert (field != null);
+        assert (schema != null);
 
         List<Operation> operations = new ArrayList<>();
-        if (schema.getBeforeOperations() != null)
+        if (schema.getBeforeOperations() != null) {
             operations.addAll(schema.getBeforeOperations());
+        }
         operations.addAll(field.getOperations());
-        if (schema.getAfterOperations() != null)
+        if (schema.getAfterOperations() != null) {
             operations.addAll(schema.getAfterOperations());
+        }
         return operations;
     }
 
@@ -112,8 +113,7 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
         if (token == JsonToken.START_ARRAY) {
             //more than one record in the input stream
             moveToNextObject();
-        }
-        else if (token == JsonToken.START_OBJECT) {
+        } else if (token == JsonToken.START_OBJECT) {
             //ready - probably only one json object in the input stream
         }
     }
@@ -131,38 +131,31 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
                 if (token == JsonToken.START_ARRAY) {
                     //nested list
                     map.put(jsonParser.getCurrentName(), parseList());
-                }
-                else if (token == JsonToken.START_OBJECT) {
+                } else if (token == JsonToken.START_OBJECT) {
                     //nested map
                     map.put(jsonParser.getCurrentName(), parseMap());
-                }
-                else if (token == JsonToken.VALUE_TRUE) {
+                } else if (token == JsonToken.VALUE_TRUE) {
                     map.put(jsonParser.getCurrentName(), Boolean.TRUE);
-                }
-                else if (token == JsonToken.VALUE_FALSE) {
+                } else if (token == JsonToken.VALUE_FALSE) {
                     map.put(jsonParser.getCurrentName(), Boolean.FALSE);
-                }
-                else if (token == JsonToken.VALUE_STRING) {
+                } else if (token == JsonToken.VALUE_STRING) {
                     //TODO: charset being used!
                     map.put(jsonParser.getCurrentName(), jsonParser.getText());
-                }
-                else if (token == JsonToken.VALUE_NUMBER_FLOAT) {
-                    try{
+                } else if (token == JsonToken.VALUE_NUMBER_FLOAT) {
+                    try {
                         map.put(jsonParser.getCurrentName(), Float.valueOf(jsonParser.getFloatValue()));
                     }
-                    catch(JsonParseException ex){
+                    catch (JsonParseException ex) {
                         map.put(jsonParser.getCurrentName(), Double.valueOf(jsonParser.getDoubleValue()));
                     }
-                }
-                else if (token == JsonToken.VALUE_NUMBER_INT) {
-                    try{
+                } else if (token == JsonToken.VALUE_NUMBER_INT) {
+                    try {
                         map.put(jsonParser.getCurrentName(), Integer.valueOf(jsonParser.getIntValue()));
                     }
-                    catch(JsonParseException ex){
+                    catch (JsonParseException ex) {
                         map.put(jsonParser.getCurrentName(), Long.valueOf(jsonParser.getLongValue()));
                     }
-                }
-                else if (token == JsonToken.VALUE_NULL) {
+                } else if (token == JsonToken.VALUE_NULL) {
                     //skip
                 }
             }
@@ -185,29 +178,22 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
                 if (token == JsonToken.START_ARRAY) {
                     //nested list
                     list.add(parseList());
-                }
-                else if (token == JsonToken.START_OBJECT) {
+                } else if (token == JsonToken.START_OBJECT) {
                     //nested map
                     list.add(parseMap());
-                }
-                else if (token == JsonToken.VALUE_TRUE) {
+                } else if (token == JsonToken.VALUE_TRUE) {
                     list.add(Boolean.TRUE);
-                }
-                else if (token == JsonToken.VALUE_FALSE) {
+                } else if (token == JsonToken.VALUE_FALSE) {
                     list.add(Boolean.FALSE);
-                }
-                else if (token == JsonToken.VALUE_NULL) {
+                } else if (token == JsonToken.VALUE_NULL) {
                     //skip
-                }
-                else if (token == JsonToken.VALUE_STRING) {
+                } else if (token == JsonToken.VALUE_STRING) {
                     //TODO: charset being used!
                     list.add(jsonParser.getText());
-                }
-                else if (token == JsonToken.VALUE_NUMBER_FLOAT) {
+                } else if (token == JsonToken.VALUE_NUMBER_FLOAT) {
                     //TODO: charset being used!
                     list.add(Float.valueOf(jsonParser.getFloatValue()));
-                }
-                else if (token == JsonToken.VALUE_NUMBER_INT) {
+                } else if (token == JsonToken.VALUE_NUMBER_INT) {
                     //TODO: charset being used!
                     list.add(Integer.valueOf(jsonParser.getIntValue()));
                 }
@@ -221,8 +207,9 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
     public void open(IOContext context) throws IOException, SchemaException {
 
         super.open(context);
-        if (context.getIn() == null)
+        if (context.getIn() == null) {
             throw new IllegalArgumentException("Invalid IOContext. No InputStream specified");
+        }
 
         jsonParser = jsonFactory.createJsonParser(context.getIn());
         transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
@@ -230,7 +217,7 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
     }
 
     @Override
-    public void close(boolean closeIOContext) {
+    public void close(boolean closeIOContext) throws IOException {
 
         super.close(closeIOContext);
         if (jsonParser != null) {
