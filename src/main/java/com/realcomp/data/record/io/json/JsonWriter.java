@@ -14,6 +14,12 @@ import com.realcomp.data.transform.TransformContext;
 import com.realcomp.data.transform.Transformer;
 import com.realcomp.data.transform.ValueSurgeon;
 import com.realcomp.data.validation.ValidationException;
+import org.codehaus.jackson.JsonEncoding;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.util.DefaultPrettyPrinter;
+import org.codehaus.jackson.util.MinimalPrettyPrinter;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -21,11 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.codehaus.jackson.JsonEncoding;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.util.DefaultPrettyPrinter;
-import org.codehaus.jackson.util.MinimalPrettyPrinter;
 
 /**
  *
@@ -50,8 +51,6 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
 
         jsonFactory = new JsonFactory();
         jsonFactory.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
-        
-        
 
         transformer = new Transformer();
         xCtx = new TransformContext();
@@ -76,10 +75,10 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
             filterFields(record, fields);
         }
 
-        if (count > 0){
+        writeJson(record.asSimpleMap());
+        if (!isSingleObject()){
             json.writeRaw("\n");
         }
-        writeJson(record.asSimpleMap());
 
         count++;
     }
@@ -194,7 +193,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
 
 
     @Override
-    public void close(boolean closeIOContext) {
+    public void close(boolean closeIOContext) throws IOException{
 
         try {
             executeAfterLastOperations();

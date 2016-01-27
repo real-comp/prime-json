@@ -6,14 +6,16 @@ import com.realcomp.data.record.io.IOContextBuilder;
 import com.realcomp.data.record.io.RecordWriterFactory;
 import com.realcomp.data.schema.Schema;
 import com.realcomp.data.schema.SchemaFactory;
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
 import static org.junit.Assert.*;
-import org.junit.Test;
 
 /**
  *
@@ -117,7 +119,7 @@ public class JsonWriterTest {
         writer.write(record);
         writer.close();
 
-        assertEquals("{\"a\":1}", new String(out.toByteArray()));
+        assertEquals("{\"a\":1}", new String(out.toByteArray()).trim());
     }
     
     
@@ -135,7 +137,7 @@ public class JsonWriterTest {
         writer.write(record);
         writer.close();
 
-        assertEquals("[{\"a\":1}]", new String(out.toByteArray()));
+        assertEquals("[{\"a\":1}]", new String(out.toByteArray()).trim());
     }
 
     @Test
@@ -153,7 +155,7 @@ public class JsonWriterTest {
         writer.write(record);
         writer.close();
 
-        assertEquals("{\"a\":1}\n{\"a\":1}", new String(out.toByteArray()));
+        assertEquals("{\"a\":1}\n{\"a\":1}\n", new String(out.toByteArray()));
 
     }
 
@@ -175,9 +177,8 @@ public class JsonWriterTest {
         writer.write(record);
 
         writer.close();
-        assertEquals("[{\"a\":1}\n,{\"a\":1}]", new String(out.toByteArray()));
+        assertEquals("[{\"a\":1},{\"a\":1}]", new String(out.toByteArray()));
     }
-
 
 
     @Test
