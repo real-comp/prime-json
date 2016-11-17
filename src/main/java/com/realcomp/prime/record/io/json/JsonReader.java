@@ -1,16 +1,16 @@
-package com.realcomp.data.record.io.json;
+package com.realcomp.prime.record.io.json;
 
-import com.realcomp.data.Operation;
-import com.realcomp.data.conversion.ConversionException;
-import com.realcomp.data.record.Record;
-import com.realcomp.data.record.io.BaseRecordReaderWriter;
-import com.realcomp.data.record.io.IOContext;
-import com.realcomp.data.record.io.RecordReader;
-import com.realcomp.data.schema.Field;
-import com.realcomp.data.schema.SchemaException;
-import com.realcomp.data.transform.TransformContext;
-import com.realcomp.data.transform.ValueSurgeon;
-import com.realcomp.data.validation.ValidationException;
+import com.realcomp.prime.Operation;
+import com.realcomp.prime.conversion.ConversionException;
+import com.realcomp.prime.record.Record;
+import com.realcomp.prime.record.io.BaseRecordReaderWriter;
+import com.realcomp.prime.record.io.IOContext;
+import com.realcomp.prime.record.io.RecordReader;
+import com.realcomp.prime.schema.Field;
+import com.realcomp.prime.schema.SchemaException;
+import com.realcomp.prime.transform.TransformContext;
+import com.realcomp.prime.transform.ValueSurgeon;
+import com.realcomp.prime.validation.ValidationException;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
@@ -32,14 +32,14 @@ import java.util.logging.Logger;
  *
  * @author krenfro
  */
-public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
+public class JsonReader extends BaseRecordReaderWriter implements RecordReader{
 
     protected JsonFactory jsonFactory;
     protected JsonParser jsonParser;
     protected ValueSurgeon surgeon;
     protected TransformContext transformContext;
 
-    public JsonReader() {
+    public JsonReader(){
         super();
         format.putDefault("type", "JSON");
         format.putDefault("pretty", "false");
@@ -50,21 +50,20 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
     }
 
     @Override
-    public Record read() throws IOException, ValidationException, ConversionException, SchemaException {
-
-        if (!beforeFirstOperationsRun) {
+    public Record read() throws IOException, ValidationException, ConversionException, SchemaException{
+        if (!beforeFirstOperationsRun){
             executeBeforeFirstOperations();
             beforeFirstOperationsRun = true;
         }
-
         Record record = null;
         moveToNextObject();
         Map map = parseMap();
 
-        if (map != null) {
-            if (schema == null) {
+        if (map != null){
+            if (schema == null){
                 record = new Record(map);
-            } else {
+            }
+            else{
                 /* Since a schema is defined, only put the fields defined in the schema into the final record.
                  * The operations should be able to find values in the more complete Record parsed from
                  * the raw json.  Create a temporary Record from the parsed json, and use that for the
@@ -73,10 +72,10 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
                 record = new Record();
                 Record temp = new Record(map);
                 transformContext.setRecord(temp);
-                for (Field field : schema.classify(temp)) {
+                for (Field field : schema.classify(temp)){
                     transformContext.setKey(field.getName());
                     Object value = surgeon.operate(getOperations(field), transformContext);
-                    if (value != null) {
+                    if (value != null){
                         //Write the results of the operations to both the final Record, and the
                         // temporary Record for subsequent field creation.
                         record.put(field.getName(), field.getType().coerce(value));
@@ -85,77 +84,83 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
                 }
             }
             count++;
-        } else {
+        }
+        else{
             executeAfterLastOperations();
         }
 
         return record;
     }
 
-    private List<Operation> getOperations(Field field) {
-
+    private List<Operation> getOperations(Field field){
         assert (field != null);
         assert (schema != null);
-
         List<Operation> operations = new ArrayList<>();
-        if (schema.getBeforeOperations() != null) {
+        if (schema.getBeforeOperations() != null){
             operations.addAll(schema.getBeforeOperations());
         }
         operations.addAll(field.getOperations());
-        if (schema.getAfterOperations() != null) {
+        if (schema.getAfterOperations() != null){
             operations.addAll(schema.getAfterOperations());
         }
         return operations;
     }
 
-    private void moveToNextObject() throws IOException {
+    private void moveToNextObject() throws IOException{
         JsonToken token = jsonParser.nextToken();
-        if (token == JsonToken.START_ARRAY) {
+        if (token == JsonToken.START_ARRAY){
             //more than one record in the input stream
             moveToNextObject();
-        } else if (token == JsonToken.START_OBJECT) {
+        }
+        else if (token == JsonToken.START_OBJECT){
             //ready - probably only one json object in the input stream
         }
     }
 
-    private Map parseMap() throws IOException {
-
+    private Map parseMap() throws IOException{
         Map map = null;
-        if (jsonParser.getCurrentToken() == JsonToken.START_OBJECT) {
+        if (jsonParser.getCurrentToken() == JsonToken.START_OBJECT){
 
             map = new HashMap();
-            while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+            while (jsonParser.nextToken() != JsonToken.END_OBJECT){
 
                 JsonToken token = jsonParser.getCurrentToken();
 
-                if (token == JsonToken.START_ARRAY) {
+                if (token == JsonToken.START_ARRAY){
                     //nested list
                     map.put(jsonParser.getCurrentName(), parseList());
-                } else if (token == JsonToken.START_OBJECT) {
+                }
+                else if (token == JsonToken.START_OBJECT){
                     //nested map
                     map.put(jsonParser.getCurrentName(), parseMap());
-                } else if (token == JsonToken.VALUE_TRUE) {
+                }
+                else if (token == JsonToken.VALUE_TRUE){
                     map.put(jsonParser.getCurrentName(), Boolean.TRUE);
-                } else if (token == JsonToken.VALUE_FALSE) {
+                }
+                else if (token == JsonToken.VALUE_FALSE){
                     map.put(jsonParser.getCurrentName(), Boolean.FALSE);
-                } else if (token == JsonToken.VALUE_STRING) {
+                }
+                else if (token == JsonToken.VALUE_STRING){
                     //TODO: charset being used!
                     map.put(jsonParser.getCurrentName(), jsonParser.getText());
-                } else if (token == JsonToken.VALUE_NUMBER_FLOAT) {
-                    try {
+                }
+                else if (token == JsonToken.VALUE_NUMBER_FLOAT){
+                    try{
                         map.put(jsonParser.getCurrentName(), Float.valueOf(jsonParser.getFloatValue()));
                     }
-                    catch (JsonParseException ex) {
+                    catch (JsonParseException ex){
                         map.put(jsonParser.getCurrentName(), Double.valueOf(jsonParser.getDoubleValue()));
                     }
-                } else if (token == JsonToken.VALUE_NUMBER_INT) {
-                    try {
+                }
+                else if (token == JsonToken.VALUE_NUMBER_INT){
+                    try{
                         map.put(jsonParser.getCurrentName(), Integer.valueOf(jsonParser.getIntValue()));
                     }
-                    catch (JsonParseException ex) {
+                    catch (JsonParseException ex){
                         map.put(jsonParser.getCurrentName(), Long.valueOf(jsonParser.getLongValue()));
                     }
-                } else if (token == JsonToken.VALUE_NULL) {
+                }
+                else if (token == JsonToken.VALUE_NULL){
                     //skip
                 }
             }
@@ -164,36 +169,41 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
         return map;
     }
 
-    private List parseList() throws IOException {
-
+    private List parseList() throws IOException{
         List list = null;
-
-        if (jsonParser.getCurrentToken() == JsonToken.START_ARRAY) {
+        if (jsonParser.getCurrentToken() == JsonToken.START_ARRAY){
 
             list = new ArrayList();
-            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+            while (jsonParser.nextToken() != JsonToken.END_ARRAY){
 
                 JsonToken token = jsonParser.getCurrentToken();
 
-                if (token == JsonToken.START_ARRAY) {
+                if (token == JsonToken.START_ARRAY){
                     //nested list
                     list.add(parseList());
-                } else if (token == JsonToken.START_OBJECT) {
+                }
+                else if (token == JsonToken.START_OBJECT){
                     //nested map
                     list.add(parseMap());
-                } else if (token == JsonToken.VALUE_TRUE) {
+                }
+                else if (token == JsonToken.VALUE_TRUE){
                     list.add(Boolean.TRUE);
-                } else if (token == JsonToken.VALUE_FALSE) {
+                }
+                else if (token == JsonToken.VALUE_FALSE){
                     list.add(Boolean.FALSE);
-                } else if (token == JsonToken.VALUE_NULL) {
+                }
+                else if (token == JsonToken.VALUE_NULL){
                     //skip
-                } else if (token == JsonToken.VALUE_STRING) {
+                }
+                else if (token == JsonToken.VALUE_STRING){
                     //TODO: charset being used!
                     list.add(jsonParser.getText());
-                } else if (token == JsonToken.VALUE_NUMBER_FLOAT) {
+                }
+                else if (token == JsonToken.VALUE_NUMBER_FLOAT){
                     //TODO: charset being used!
                     list.add(Float.valueOf(jsonParser.getFloatValue()));
-                } else if (token == JsonToken.VALUE_NUMBER_INT) {
+                }
+                else if (token == JsonToken.VALUE_NUMBER_INT){
                     //TODO: charset being used!
                     list.add(Integer.valueOf(jsonParser.getIntValue()));
                 }
@@ -204,27 +214,24 @@ public class JsonReader extends BaseRecordReaderWriter implements RecordReader {
     }
 
     @Override
-    public void open(IOContext context) throws IOException, SchemaException {
-
+    public void open(IOContext context) throws IOException, SchemaException{
         super.open(context);
-        if (context.getIn() == null) {
+        if (context.getIn() == null){
             throw new IllegalArgumentException("Invalid IOContext. No InputStream specified");
         }
-
         jsonParser = jsonFactory.createJsonParser(context.getIn());
         transformContext.setValidationExceptionThreshold(context.getValidationExeptionThreshold());
         transformContext.setSchema(schema);
     }
 
     @Override
-    public void close(boolean closeIOContext) throws IOException {
-
+    public void close(boolean closeIOContext) throws IOException{
         super.close(closeIOContext);
-        if (jsonParser != null) {
-            try {
+        if (jsonParser != null){
+            try{
                 jsonParser.close();
             }
-            catch (IOException ex) {
+            catch (IOException ex){
                 Logger.getLogger(JsonReader.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

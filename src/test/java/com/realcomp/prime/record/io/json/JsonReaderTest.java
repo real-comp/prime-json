@@ -1,22 +1,20 @@
-package com.realcomp.data.record.io.json;
+package com.realcomp.prime.record.io.json;
 
-import com.realcomp.data.schema.Schema;
-import com.realcomp.data.record.Record;
-import com.realcomp.data.record.io.IOContext;
-import com.realcomp.data.record.io.IOContextBuilder;
-import com.realcomp.data.record.io.RecordReaderFactory;
-import com.realcomp.data.schema.SchemaFactory;
+import com.realcomp.prime.record.Record;
+import com.realcomp.prime.record.io.IOContext;
+import com.realcomp.prime.record.io.IOContextBuilder;
+import com.realcomp.prime.record.io.RecordReaderFactory;
+import com.realcomp.prime.schema.SchemaFactory;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Test;
+
 import static org.junit.Assert.*;
 
-/**
- *
- * @author krenfro
- */
+
 public class JsonReaderTest {
 
     static{

@@ -1,11 +1,11 @@
-package com.realcomp.data.record.io.json;
+package com.realcomp.prime.record.io.json;
 
-import com.realcomp.data.record.Record;
-import com.realcomp.data.record.io.IOContext;
-import com.realcomp.data.record.io.IOContextBuilder;
-import com.realcomp.data.record.io.RecordWriterFactory;
-import com.realcomp.data.schema.Schema;
-import com.realcomp.data.schema.SchemaFactory;
+import com.realcomp.prime.record.Record;
+import com.realcomp.prime.record.io.IOContext;
+import com.realcomp.prime.record.io.IOContextBuilder;
+import com.realcomp.prime.record.io.RecordWriterFactory;
+import com.realcomp.prime.schema.Schema;
+import com.realcomp.prime.schema.SchemaFactory;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -17,10 +17,7 @@ import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
-/**
- *
- * @author krenfro
- */
+
 public class JsonWriterTest {
 
 
@@ -34,7 +31,6 @@ public class JsonWriterTest {
 
 
     private Record getSampleRecord(){
-
         Record record = new Record();
         record.put("zip", "78717");
         record.put("address", "8665 EPHRAIM RD");
@@ -317,8 +313,5 @@ public class JsonWriterTest {
         assertFalse(Pattern.compile("\"skip\"").matcher(json).find());
 
     }
-
-
-
 
 }
