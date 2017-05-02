@@ -1,11 +1,11 @@
 package com.realcomp.prime.record.io.json;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.realcomp.prime.record.Record;
 import com.realcomp.prime.record.io.IOContext;
 import com.realcomp.prime.record.io.IOContextBuilder;
 import com.realcomp.prime.record.io.RecordReaderFactory;
 import com.realcomp.prime.schema.SchemaFactory;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;

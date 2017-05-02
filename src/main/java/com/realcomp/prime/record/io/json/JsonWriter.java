@@ -1,5 +1,10 @@
 package com.realcomp.prime.record.io.json;
 
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
 import com.realcomp.prime.DataType;
 import com.realcomp.prime.Operation;
 import com.realcomp.prime.conversion.ConversionException;
@@ -14,11 +19,6 @@ import com.realcomp.prime.transform.TransformContext;
 import com.realcomp.prime.transform.Transformer;
 import com.realcomp.prime.transform.ValueSurgeon;
 import com.realcomp.prime.validation.ValidationException;
-import org.codehaus.jackson.JsonEncoding;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.util.DefaultPrettyPrinter;
-import org.codehaus.jackson.util.MinimalPrettyPrinter;
 
 import java.io.IOException;
 import java.util.HashSet;
