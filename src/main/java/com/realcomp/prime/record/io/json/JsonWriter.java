@@ -192,7 +192,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
                 if (isSingleObject()){
                     json.writeEndArray();
                 }
-
+                json.flush();
                 json.close();
             }
             catch (IOException ex){
