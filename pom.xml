@@ -163,7 +163,7 @@
         <dependency>
             <groupId>com.real-comp</groupId>
             <artifactId>prime</artifactId>
-            <version>0.5.4</version>
+            <version>0.5.5</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
