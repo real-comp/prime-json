@@ -18,6 +18,7 @@ import com.realcomp.prime.schema.SchemaException;
 import com.realcomp.prime.transform.TransformContext;
 import com.realcomp.prime.transform.Transformer;
 import com.realcomp.prime.transform.ValueSurgeon;
+import com.realcomp.prime.validation.RecordValidationException;
 import com.realcomp.prime.validation.ValidationException;
 
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
     }
 
     @Override
-    public void write(Record record) throws IOException, ValidationException, ConversionException, SchemaException{
+    public void write(Record record) throws ValidationException, IOException, ConversionException, SchemaException{
 
         if (record == null){
             throw new IllegalArgumentException("record is null");
@@ -64,13 +65,24 @@ public class JsonWriter extends BaseRecordReaderWriter implements RecordWriter{
             executeBeforeFirstOperations();
             beforeFirstOperationsRun = true;
         }
-        if (schema != null){
-            //modify the record, performing all operations and keeping only the fields defined in the schema
-            FieldList fields = schema.classify(record);
-            transform(record, fields);
-            filterFields(record, fields);
+        try{
+            if (schema != null){
+                //modify the record, performing all operations and keeping only the fields defined in the schema
+                FieldList fields = schema.classify(record);
+                transform(record, fields);
+                filterFields(record, fields);
+            }
+            writeJson(record.asSimpleMap());
         }
-        writeJson(record.asSimpleMap());
+        catch(ValidationException ex){
+            if (ex instanceof RecordValidationException){
+                ((RecordValidationException) ex).setRecord(record);
+                throw ex;
+            }
+            else{
+                throw new RecordValidationException(ex, record);
+            }
+        }
         if (!isSingleObject()){
             json.writeRaw("\n");
         }
