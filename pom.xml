@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.real-comp</groupId>
     <artifactId>prime-json</artifactId>
-    <version>0.5.6</version>
+    <version>0.5.7-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>prime-json</name>
     <description>JSON support for Prime</description>
@@ -31,7 +31,7 @@
         <connection>scm:git:git@github.com:real-comp/prime-json.git</connection>
         <developerConnection>scm:git:git@github.com:real-comp/prime-json.git</developerConnection>
         <url>git@github.com:real-comp/prime-json.git</url>
-        <tag>prime-json-0.5.6</tag>
+        <tag>HEAD</tag>
     </scm>
     <distributionManagement>
         <snapshotRepository>
