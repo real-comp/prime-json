@@ -139,6 +139,7 @@ public class JsonSchemaGenerator{
 
         OptionParser parser = new OptionParser(){
             {
+                accepts("limit", "max number of input records to examine").withRequiredArg().describedAs("count");
                 accepts("in", "input file (default: STDIN)").withRequiredArg().describedAs("file");
                 accepts("out", "output file (default: STDOUT)").withRequiredArg().describedAs("file");
                 acceptsAll(Arrays.asList("h", "?", "help"), "help");
@@ -154,6 +155,11 @@ public class JsonSchemaGenerator{
             }
             else{
                 JsonSchemaGenerator generator = new JsonSchemaGenerator();
+
+                if (options.has("limit")){
+                    generator.setLimit(Long.parseLong((String) options.valueOf("limit")));
+                }
+
                 InputStream in =  options.has("in")
                         ? new BufferedInputStream(new FileInputStream((String) options.valueOf("in")))
                         : new BufferedInputStream(System.in);
